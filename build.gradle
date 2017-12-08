@@ -14,29 +14,40 @@ dependencies {
 def checkoutDir = file("spek")
 def originalDir = file("build/original")
 def relocatedDir = file("build/relocated")
+def commit = ["git", "rev-parse", "HEAD"].execute([], checkoutDir).text.trim()
 
 task cleanCheckout(type: Exec) {
     workingDir = checkoutDir
     commandLine = ["git", "clean", "-fdx"]
 }
 
-task copyOriginal(type: Copy) {
-    dependsOn cleanCheckout
-
-    from checkoutDir
-    into originalDir
+task cloneOriginal(type: Exec) {
+    inputs.property "commit", commit
+    outputs.dir originalDir
+    workingDir = checkoutDir
+    commandLine = ["git", "clone", checkoutDir, originalDir]
+    doFirst {
+        delete originalDir
+    }
 }
 
-task copyRelocated(type: Copy) {
-    dependsOn cleanCheckout
+task cloneRelocated(type: Exec) {
+    inputs.property "commit", commit
+    outputs.dir relocatedDir
+    workingDir = checkoutDir
+    commandLine = ["git", "clone", checkoutDir, relocatedDir]
+    doFirst {
+        delete relocatedDir
+    }
+}
 
-    from checkoutDir
-    into relocatedDir
+assemble {
+    dependsOn cloneOriginal
+    dependsOn cloneRelocated
 }
 
 test {
-    dependsOn copyOriginal
-    dependsOn copyRelocated
+    dependsOn assemble
 
     systemProperty "original.dir", originalDir.absolutePath
     systemProperty "relocated.dir", relocatedDir.absolutePath
@@ -50,9 +61,4 @@ test {
     if (System.getenv("TRAVIS") == "true" || Boolean.getBoolean("org.gradle.kotlin.test.show-output")) {
         testLogging.showStandardStreams = true
     }
-}
-
-assemble {
-    dependsOn copyOriginal
-    dependsOn copyRelocated
 }
