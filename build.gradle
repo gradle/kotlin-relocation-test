@@ -1,0 +1,58 @@
+apply plugin: 'groovy'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    testCompile "com.google.guava:guava:23.5-jre"
+    testCompile gradleTestKit()
+    testCompile "junit:junit:4.12"
+    testCompile "org.spockframework:spock-core:1.1-groovy-2.4@jar"
+}
+
+def checkoutDir = file("spek")
+def originalDir = file("build/original")
+def relocatedDir = file("build/relocated")
+
+task cleanCheckout(type: Exec) {
+    workingDir = checkoutDir
+    commandLine = ["git", "clean", "-fdx"]
+}
+
+task copyOriginal(type: Copy) {
+    dependsOn cleanCheckout
+
+    from checkoutDir
+    into originalDir
+}
+
+task copyRelocated(type: Copy) {
+    dependsOn cleanCheckout
+
+    from checkoutDir
+    into relocatedDir
+}
+
+test {
+    dependsOn copyOriginal
+    dependsOn copyRelocated
+
+    systemProperty "original.dir", originalDir.absolutePath
+    systemProperty "relocated.dir", relocatedDir.absolutePath
+    systemProperty "org.gradle.kotlin.test.gradle-installation", System.getProperty("org.gradle.kotlin.test.gradle-installation")
+    systemProperty "org.gradle.kotlin.test.kotlin-version", System.getProperty("org.gradle.kotlin.test.kotlin-version")
+    systemProperty "org.gradle.kotlin.test.scan-url", System.getProperty("org.gradle.kotlin.test.scan-url")
+
+    inputs.dir originalDir withPropertyName "original.dir"
+    inputs.dir relocatedDir withPropertyName "relocated.dir"
+
+    if (System.getenv("TRAVIS") == "true" || Boolean.getBoolean("org.gradle.kotlin.test.show-output")) {
+        testLogging.showStandardStreams = true
+    }
+}
+
+assemble {
+    dependsOn copyOriginal
+    dependsOn copyRelocated
+}
