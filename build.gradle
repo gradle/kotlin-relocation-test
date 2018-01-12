@@ -55,6 +55,9 @@ test {
     systemProperty "org.gradle.kotlin.test.kotlin-version", System.getProperty("org.gradle.kotlin.test.kotlin-version")
     systemProperty "org.gradle.kotlin.test.scan-url", System.getProperty("org.gradle.kotlin.test.scan-url")
 
+    // Ensure that timestamps are not triggered when running this as a smoke test
+    environment.remove("TEAMCITY_VERSION")
+
     inputs.dir originalDir withPropertyName "original.dir"
     inputs.dir relocatedDir withPropertyName "relocated.dir"
 
