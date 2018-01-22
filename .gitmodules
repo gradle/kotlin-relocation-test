@@ -1,4 +1,4 @@
 [submodule "spek"]
 	path = spek
-	url = https://github.com/lptr/spek.git
-	branch = lptr/fix-dokka-plugin
+	url = https://github.com/spekframework/spek.git
+	branch = 2.x
