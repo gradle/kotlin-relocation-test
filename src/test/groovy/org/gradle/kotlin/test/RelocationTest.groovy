@@ -19,8 +19,8 @@ class RelocationTest extends Specification {
     static final String KOTLIN_VERSION_PROPERTY = "org.gradle.kotlin.test.kotlin-version"
     static final String SCAN_URL_PROPERTY = "org.gradle.kotlin.test.scan-url"
 
-    static final String DEFAULT_GRADLE_VERSION = "4.5.1"
-    static final String DEFAULT_KOTLIN_VERSION = "1.2.21"
+    static final String DEFAULT_GRADLE_VERSION = "4.6"
+    static final String DEFAULT_KOTLIN_VERSION = "1.2.30"
 
     @Rule TemporaryFolder temporaryFolder
     File cacheDir
