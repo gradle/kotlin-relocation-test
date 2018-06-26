@@ -19,8 +19,8 @@ class RelocationTest extends Specification {
     static final String KOTLIN_VERSION_PROPERTY = "org.gradle.kotlin.test.kotlin-version"
     static final String SCAN_URL_PROPERTY = "org.gradle.kotlin.test.scan-url"
 
-    static final String DEFAULT_GRADLE_VERSION = "4.6"
-    static final String DEFAULT_KOTLIN_VERSION = "1.2.30"
+    static final String DEFAULT_GRADLE_VERSION = "4.8.1"
+    static final String DEFAULT_KOTLIN_VERSION = "1.2.50"
 
     @Rule TemporaryFolder temporaryFolder
     File cacheDir
@@ -86,6 +86,7 @@ class RelocationTest extends Specification {
             "--build-cache",
             "--scan",
             "--init-script", initScript.absolutePath,
+            "--stacktrace",
         ]
 
         cleanCheckout(originalDir, defaultArgs)
@@ -210,11 +211,25 @@ class RelocationTest extends Specification {
         builder.put(':spek-runtime:jvm:compileKotlin', FROM_CACHE)
         builder.put(':spek-runtime:jvm:jar', SUCCESS)
         builder.put(':spek-runtime:jvm:processResources', NO_SOURCE)
+
+        builder.put(':samples:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-dsl:common:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-dsl:jvm:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-runtime:common:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-runtime:jvm:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-runner:junit5:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-extension:data-driven:common:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-extension:data-driven:jvm:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-extension:subject:common:inspectClassesForKotlinIC', SUCCESS)
+        builder.put(':spek-extension:subject:jvm:inspectClassesForKotlinIC', SUCCESS)
+
         return new ExpectedResults(builder.build())
     }
 
     GradleRunner createGradleRunner() {
         def gradleRunner = GradleRunner.create()
+
+        println "> Running with Kotlin version in $kotlinPluginVersion"
 
         def gradleInstallation = System.getProperty(GRADLE_INSTALLATION_PROPERTY)
         if (gradleInstallation) {
