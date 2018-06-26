@@ -19,7 +19,7 @@ class RelocationTest extends Specification {
     static final String KOTLIN_VERSION_PROPERTY = "org.gradle.kotlin.test.kotlin-version"
     static final String SCAN_URL_PROPERTY = "org.gradle.kotlin.test.scan-url"
 
-    static final String DEFAULT_GRADLE_VERSION = "4.7"
+    static final String DEFAULT_GRADLE_VERSION = "4.8.1"
     static final String DEFAULT_KOTLIN_VERSION = "1.2.50"
 
     @Rule TemporaryFolder temporaryFolder
@@ -228,6 +228,8 @@ class RelocationTest extends Specification {
 
     GradleRunner createGradleRunner() {
         def gradleRunner = GradleRunner.create()
+
+        println "> Running with Kotlin version in $kotlinPluginVersion"
 
         def gradleInstallation = System.getProperty(GRADLE_INSTALLATION_PROPERTY)
         if (gradleInstallation) {
