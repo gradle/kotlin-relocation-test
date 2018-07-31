@@ -55,8 +55,10 @@ test {
     systemProperty "org.gradle.kotlin.test.kotlin-version", System.getProperty("org.gradle.kotlin.test.kotlin-version")
     systemProperty "org.gradle.kotlin.test.scan-url", System.getProperty("org.gradle.kotlin.test.scan-url")
     systemProperty "org.gradle.smoketests.mirror.init.script", System.getProperty("org.gradle.smoketests.mirror.init.script")
-    if(System.getProperty("org.gradle.internal.plugins.portal.url.override")) {
-        systemProperty "org.gradle.internal.plugins.portal.url.override", System.getProperty("org.gradle.internal.plugins.portal.url.override")
+
+    def pluginPortalMirrorUrl = System.getProperty("org.gradle.internal.plugins.portal.url.override")
+    if (pluginPortalMirrorUrl) {
+        systemProperty "org.gradle.internal.plugins.portal.url.override", pluginPortalMirrorUrl
     }
 
     // Ensure that timestamps are not triggered when running this as a smoke test
