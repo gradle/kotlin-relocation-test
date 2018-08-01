@@ -54,6 +54,12 @@ test {
     systemProperty "org.gradle.kotlin.test.gradle-installation", System.getProperty("org.gradle.kotlin.test.gradle-installation")
     systemProperty "org.gradle.kotlin.test.kotlin-version", System.getProperty("org.gradle.kotlin.test.kotlin-version")
     systemProperty "org.gradle.kotlin.test.scan-url", System.getProperty("org.gradle.kotlin.test.scan-url")
+    systemProperty "org.gradle.smoketests.init.script", System.getProperty("org.gradle.smoketests.init.script")
+
+    def pluginPortalMirrorUrl = System.getProperty("org.gradle.internal.plugins.portal.url.override")
+    if (pluginPortalMirrorUrl) {
+        systemProperty "org.gradle.internal.plugins.portal.url.override", pluginPortalMirrorUrl
+    }
 
     // Ensure that timestamps are not triggered when running this as a smoke test
     environment.remove("TEAMCITY_VERSION")
