@@ -19,7 +19,7 @@ class RelocationTest extends Specification {
     static final String KOTLIN_VERSION_PROPERTY = "org.gradle.kotlin.test.kotlin-version"
     static final String SCAN_URL_PROPERTY = "org.gradle.kotlin.test.scan-url"
     static final String PLUGIN_MIRROR_PROPERTY = "org.gradle.internal.plugins.portal.url.override"
-    static final String MIRRORS_INIT_SCRIPT_PROPERTY = "org.gradle.smoketests.mirror.init.script"
+    static final String SMOKE_TEST_INIT_SCRIPT_PROPERTY = "org.gradle.smoketests.mirror.init.script"
 
     static final String DEFAULT_GRADLE_VERSION = "4.8.1"
     static final String DEFAULT_KOTLIN_VERSION = "1.2.50"
@@ -29,7 +29,7 @@ class RelocationTest extends Specification {
     String kotlinPluginVersion
     String scanUrl
     String pluginMirrorUrl
-    String mirrorsInitScript
+    String smokeTestInitScript
 
     def setup() {
         cacheDir = temporaryFolder.newFolder()
@@ -41,7 +41,7 @@ class RelocationTest extends Specification {
 
         scanUrl = System.getProperty(SCAN_URL_PROPERTY)
         pluginMirrorUrl = System.getProperty(PLUGIN_MIRROR_PROPERTY)
-        mirrorsInitScript = System.getProperty(MIRRORS_INIT_SCRIPT_PROPERTY)
+        smokeTestInitScript = System.getProperty(SMOKE_TEST_INIT_SCRIPT_PROPERTY)
     }
 
     def "spek can be built relocatably"() {
@@ -95,12 +95,12 @@ class RelocationTest extends Specification {
             "--stacktrace",
         ]
 
-        if (mirrorsInitScript) {
-            defaultArgs += ['--init-script', mirrorsInitScript]
+        if (smokeTestInitScript) {
+            defaultArgs += ['--init-script', smokeTestInitScript]
         }
 
         if (pluginMirrorUrl) {
-            defaultArgs += ["-D${MIRRORS_INIT_SCRIPT_PROPERTY}=${pluginMirrorUrl}".toString()]
+            defaultArgs += ["-D${SMOKE_TEST_INIT_SCRIPT_PROPERTY}=${pluginMirrorUrl}".toString()]
         }
 
         cleanCheckout(originalDir, defaultArgs)
