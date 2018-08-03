@@ -22,7 +22,7 @@ class RelocationTest extends Specification {
     static final String SMOKE_TEST_INIT_SCRIPT_PROPERTY = "org.gradle.smoketests.mirror.init.script"
 
     static final String DEFAULT_GRADLE_VERSION = "4.8.1"
-    static final String DEFAULT_KOTLIN_VERSION = "1.2.50"
+    static final String DEFAULT_KOTLIN_VERSION = "1.2.60"
 
     @Rule TemporaryFolder temporaryFolder
     File cacheDir
