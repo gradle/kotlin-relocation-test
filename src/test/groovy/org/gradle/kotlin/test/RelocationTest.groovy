@@ -22,7 +22,7 @@ class RelocationTest extends Specification {
     static final String SMOKE_TEST_INIT_SCRIPT_PROPERTY = "org.gradle.smoketests.mirror.init.script"
 
     static final String DEFAULT_GRADLE_VERSION = "4.8.1"
-    static final String DEFAULT_KOTLIN_VERSION = "1.2.61"
+    static final String DEFAULT_KOTLIN_VERSION = "1.2.70-eap-40"
 
     @Rule TemporaryFolder temporaryFolder
     File cacheDir
@@ -55,6 +55,8 @@ class RelocationTest extends Specification {
 
         def expectedResults = expectedResults()
 
+        def kotlinEapRepositoryConfiguration = """maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }"""
+
         def scanPluginConfiguration = scanUrl ? """
             plugins.matching({ it.class.name == "com.gradle.scan.plugin.BuildScanPlugin" }).all {
                 buildScan {
@@ -67,9 +69,7 @@ class RelocationTest extends Specification {
             rootProject { root ->
                 buildscript {
                     repositories {
-                        maven {
-                            url "https://dl.bintray.com/kotlin/kotlin-dev"
-                        }
+                        $kotlinEapRepositoryConfiguration
                     }
                     dependencies {
                         classpath ('org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinPluginVersion') { force = true }
@@ -77,12 +77,25 @@ class RelocationTest extends Specification {
                 }
 
                 $scanPluginConfiguration
+
+                allprojects {
+                    repositories {
+                        jcenter()
+                        $kotlinEapRepositoryConfiguration
+                    }
+                }
             }
 
             settingsEvaluated { settings ->
                 settings.buildCache {
                     local(DirectoryBuildCache) {
                         directory = "${cacheDir.toURI()}"
+                    }
+                }
+                settings.pluginManagement {
+                    repositories {
+                        gradlePluginPortal()
+                        $kotlinEapRepositoryConfiguration
                     }
                 }
             }
