@@ -1,4 +1,4 @@
 [submodule "spek"]
 	path = spek
-	url = https://github.com/gradle/spek.git
-	branch = gradle/relocation-test
+	url = https://github.com/spekframework/spek.git
+	branch = 2.x
