@@ -313,7 +313,7 @@ class RelocationTest extends Specification {
         builder.put(":spek-ide-plugin-intellij-base-jvm:jar", SUCCESS)
         builder.put(":spek-ide-plugin-android-studio:compileKotlin", FROM_CACHE)
         builder.put(":spek-ide-plugin-intellij-base-jvm:prepareSandbox", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:compileKotlin", FROM_CACHE)
+        builder.put(":spek-ide-plugin-intellij-idea:compileKotlin", SUCCESS)
         builder.put(":spek-ide-plugin-intellij-idea:compileJava", NO_SOURCE)
         builder.put(":spek-ide-plugin-android-studio:compileJava", NO_SOURCE)
         builder.put(":spek-ide-plugin-intellij-idea:classes", SUCCESS)
