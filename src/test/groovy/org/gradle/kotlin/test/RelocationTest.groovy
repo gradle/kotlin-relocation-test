@@ -56,8 +56,6 @@ class RelocationTest extends Specification {
 
         def expectedResults = expectedResults()
 
-        def kotlinEapRepositoryConfiguration = """maven { url "https://dl.bintray.com/kotlin/kotlin-eap" }"""
-
         def scanPluginConfiguration = scanUrl ? """
             plugins.matching({ it.class.name == "com.gradle.scan.plugin.BuildScanPlugin" }).all {
                 buildScan {
@@ -69,34 +67,18 @@ class RelocationTest extends Specification {
         def initScript = temporaryFolder.newFile("init.gradle") << """
             rootProject { root ->
                 buildscript {
-                    repositories {
-                        $kotlinEapRepositoryConfiguration
-                    }
                     dependencies {
                         classpath ('org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinPluginVersion') { force = true }
                     }
                 }
 
                 $scanPluginConfiguration
-
-                allprojects {
-                    repositories {
-                        jcenter()
-                        $kotlinEapRepositoryConfiguration
-                    }
-                }
             }
 
             settingsEvaluated { settings ->
                 settings.buildCache {
                     local(DirectoryBuildCache) {
                         directory = "${cacheDir.toURI()}"
-                    }
-                }
-                settings.pluginManagement {
-                    repositories {
-                        gradlePluginPortal()
-                        $kotlinEapRepositoryConfiguration
                     }
                 }
             }
@@ -107,6 +89,7 @@ class RelocationTest extends Specification {
             "--scan",
             "--init-script", initScript.absolutePath,
             "--stacktrace",
+            "-PexcludeIdePlugins=true",
         ]
 
         if (smokeTestInitScript) {
@@ -192,20 +175,13 @@ class RelocationTest extends Specification {
         builder.put(":spek-kotlin-compiler-plugin-jvm:kaptGenerateStubsKotlin", NO_SOURCE)
         builder.put(":integration-test:jvmProcessResources", NO_SOURCE)
         builder.put(":spek-runtime:jvmProcessResources", NO_SOURCE)
-        builder.put(":spek-ide-plugin-intellij-base:patchPluginXml", NO_SOURCE)
-        builder.put(":spek-ide-plugin-interop-jvm:processResources", NO_SOURCE)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:patchPluginXml", NO_SOURCE)
-        builder.put(":spek-ide-plugin-android-studio:patchPluginXml", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:patchPluginXml", SUCCESS)
         builder.put(":spek-runner-junit5:processResources", SUCCESS)
         builder.put(":integration-test:linuxProcessResources", NO_SOURCE)
-        builder.put(":spek-ide-plugin-intellij-base:processResources", NO_SOURCE)
         builder.put(":spek-runtime:compileKotlinWindows", SKIPPED)
         builder.put(":spek-runtime:linuxProcessResources", NO_SOURCE)
         builder.put(":spek-runtime:macosProcessResources", NO_SOURCE)
         builder.put(":integration-test:macosProcessResources", NO_SOURCE)
         builder.put(":spek-kotlin-compiler-plugin-jvm:kaptKotlin", FROM_CACHE)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:processResources", NO_SOURCE)
         builder.put(":spek-runtime:windowsProcessResources", NO_SOURCE)
         builder.put(":integration-test:windowsProcessResources", NO_SOURCE)
         builder.put(":spek-runtime:windowsMainKlibrary", UP_TO_DATE)
@@ -224,11 +200,9 @@ class RelocationTest extends Specification {
         builder.put(":spek-kotlin-compiler-plugin-jvm:classes", UP_TO_DATE)
         builder.put(":spek-kotlin-compiler-plugin-jvm:inspectClassesForKotlinIC", SUCCESS)
         builder.put(":spek-kotlin-compiler-plugin-jvm:jar", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:processResources", SUCCESS)
         builder.put(":integration-test:compileKotlinLinux", SUCCESS)
         builder.put(":spek-kotlin-compiler-plugin-native:assemble", SUCCESS)
         builder.put(":spek-kotlin-compiler-plugin-jvm:assemble", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:processResources", SUCCESS)
         builder.put(":integration-test:compileKotlinMacos", SKIPPED)
         builder.put(":spek-runtime:compileKotlinLinux", SUCCESS)
         builder.put(":spek-dsl:compileKotlinMacos", SKIPPED)
@@ -271,17 +245,12 @@ class RelocationTest extends Specification {
         builder.put(":spek-runtime:compileKotlinJvm", FROM_CACHE)
         builder.put(":spek-runtime:jvmMainClasses", UP_TO_DATE)
         builder.put(":spek-runtime:jvmJar", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:compileKotlin", FROM_CACHE)
-        builder.put(":spek-ide-plugin-interop-jvm:compileKotlin", FROM_CACHE)
         builder.put(":spek-runner-junit5:compileKotlin", FROM_CACHE)
         builder.put(":spek-runtime:linuxMainKlibrary", SUCCESS)
         builder.put(":spek-runtime:linkTestDebugExecutableLinux", NO_SOURCE)
         builder.put(":spek-runtime:macosMainKlibrary", UP_TO_DATE)
         builder.put(":spek-runtime:linkTestDebugExecutableMacos", SKIPPED)
         builder.put(":spek-runtime:compileKotlinMetadata", FROM_CACHE)
-        builder.put(":spek-ide-plugin-interop-jvm:compileJava", NO_SOURCE)
-        builder.put(":spek-ide-plugin-interop-jvm:classes", UP_TO_DATE)
-        builder.put(":spek-ide-plugin-interop-jvm:shadowJar", SUCCESS)
         builder.put(":spek-runner-junit5:compileJava", NO_SOURCE)
         builder.put(":spek-runner-junit5:classes", SUCCESS)
         builder.put(":spek-runner-junit5:inspectClassesForKotlinIC", SUCCESS)
@@ -289,58 +258,8 @@ class RelocationTest extends Specification {
         builder.put(":spek-runtime:metadataMainClasses", UP_TO_DATE)
         builder.put(":spek-runtime:metadataJar", SUCCESS)
         builder.put(":spek-runtime:assemble", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:compileJava", NO_SOURCE)
         builder.put(":spek-runner-junit5:assemble", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:classes", UP_TO_DATE)
-        builder.put(":spek-ide-plugin-intellij-base:inspectClassesForKotlinIC", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:instrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:postInstrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:jar", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:prepareSandbox", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:buildSearchableOptions", SKIPPED)
-        builder.put(":spek-ide-plugin-intellij-base:jarSearchableOptions", SKIPPED)
-        builder.put(":spek-ide-plugin-intellij-base:buildPlugin", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base:assemble", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:compileKotlin", FROM_CACHE)
-        builder.put(":spek-ide-plugin-interop-jvm:inspectClassesForKotlinIC", SUCCESS)
-        builder.put(":spek-ide-plugin-interop-jvm:jar", SUCCESS)
-        builder.put(":spek-ide-plugin-interop-jvm:assemble", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:compileJava", NO_SOURCE)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:classes", UP_TO_DATE)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:inspectClassesForKotlinIC", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:instrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:postInstrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:jar", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:compileKotlin", FROM_CACHE)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:prepareSandbox", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:compileKotlin", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:compileJava", NO_SOURCE)
-        builder.put(":spek-ide-plugin-android-studio:compileJava", NO_SOURCE)
-        builder.put(":spek-ide-plugin-intellij-idea:classes", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:inspectClassesForKotlinIC", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:classes", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:inspectClassesForKotlinIC", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:instrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:instrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:postInstrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:jar", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:prepareSandbox", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:postInstrumentCode", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:jar", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:prepareSandbox", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:buildSearchableOptions", SKIPPED)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:jarSearchableOptions", SKIPPED)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:buildPlugin", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-base-jvm:assemble", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:buildSearchableOptions", SKIPPED)
-        builder.put(":spek-ide-plugin-android-studio:jarSearchableOptions", SKIPPED)
-        builder.put(":spek-ide-plugin-android-studio:buildPlugin", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:buildSearchableOptions", SUCCESS)
-        builder.put(":spek-ide-plugin-android-studio:assemble", SUCCESS)
         builder.put(":integration-test:linkTestDebugExecutableMacos", SKIPPED)
-        builder.put(":spek-ide-plugin-intellij-idea:jarSearchableOptions", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:buildPlugin", SUCCESS)
-        builder.put(":spek-ide-plugin-intellij-idea:assemble", SUCCESS)
         builder.put(":integration-test:assemble", SUCCESS)
 
         return new ExpectedResults(builder.build())
