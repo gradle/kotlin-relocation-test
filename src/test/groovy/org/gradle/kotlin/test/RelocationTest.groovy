@@ -21,8 +21,8 @@ class RelocationTest extends Specification {
     static final String PLUGIN_MIRROR_PROPERTY = "org.gradle.internal.plugins.portal.url.override"
     static final String SMOKE_TEST_INIT_SCRIPT_PROPERTY = "org.gradle.smoketests.mirror.init.script"
 
-    static final String DEFAULT_GRADLE_VERSION = "4.8.1"
-    static final String DEFAULT_KOTLIN_VERSION = "1.2.70-eap-40"
+    static final String DEFAULT_GRADLE_VERSION = "4.10.2"
+    static final String DEFAULT_KOTLIN_VERSION = "1.3.0-rc-57"
 
     @Rule TemporaryFolder temporaryFolder
     File cacheDir
